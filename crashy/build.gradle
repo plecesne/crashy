@@ -27,21 +27,21 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
     buildToolsVersion '33.0.0'
-}
 
-task sourcesJar(type: Jar) {
-    from android.sourceSets.main.java.srcDirs
-    archiveClassifier = 'sources'
-}
-
-task javadoc(type: Javadoc) {
-    source = android.sourceSets.main.java.srcDirs
-}
-
-task javadocsJar(type: Jar, dependsOn: javadoc){
-    archiveClassifier = 'javadoc'
-    from javadoc.destinationDir
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+            withJavadocJar()
+        }
+    }
 }
 
 dependencies {
 }
+
+ext {
+    PUBLISH_GROUP_ID = 'io.github.plecesne'
+    PUBLISH_VERSION = '1.0.0'
+    PUBLISH_ARTIFACT_ID = 'crashy'
+}
+apply from: "${rootProject.projectDir}/crashy/publish-module.gradle"

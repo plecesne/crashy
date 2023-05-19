@@ -1,0 +1,73 @@
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
+
+group = PUBLISH_GROUP_ID
+version = PUBLISH_VERSION
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+
+                groupId PUBLISH_GROUP_ID
+                artifactId PUBLISH_ARTIFACT_ID
+                version PUBLISH_VERSION
+
+                pom {
+                    name = 'CrashyMcCrashFace'
+                    description = 'A library that crashes. A lot.'
+                    url = 'https://github.com/plecesne/crashy'
+                    licenses {
+                        license {
+                            name = 'The Apache License, Version 2.0'
+                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = 'plecesne'
+                            name = 'Pierre Lecesne'
+                            email = 'pierre.lecesne@gmail.com'
+                        }
+                    }
+                    scm {
+                        connection = 'scm:git:github.com/plecesne/crashy.git'
+                        developerConnection = 'scm:git:ssh://github.com/plecesne/crashy.git'
+                        url = 'https://github.com/plecesne/crashy/tree/main'
+                    }
+                }
+            }
+        }
+    }
+}
+
+ext["signing.keyId"] = rootProject.ext["signing.keyId"]
+ext["signing.password"] = rootProject.ext["signing.password"]
+ext["signing.secretKeyRingFile"] = rootProject.ext["signing.secretKeyRingFile"]
+
+signing {
+    sign publishing.publications
+}
+
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    archiveClassifier = 'sources'
+}
+
+task javadoc(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+}
+
+task javadocsJar(type: Jar, dependsOn: javadoc){
+    archiveClassifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives javadocsJar, sourcesJar
+}
+
+signing {
+    sign configurations.archives
+}
