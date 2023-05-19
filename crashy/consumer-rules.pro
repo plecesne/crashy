@@ -1,0 +1,1 @@
+# In here go Proguard rules for apps depending on this SDK.
